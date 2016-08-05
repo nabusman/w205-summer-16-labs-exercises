@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from collections import Counter
 from streamparse.bolt import Bolt
 
+import psycopg2
 
 
 class WordCounter(Bolt):
@@ -19,6 +20,18 @@ class WordCounter(Bolt):
         # Database name: Tcount 
         # Table name: Tweetwordcount 
         # you need to create both the database and the table in advance.
+	conn = psycopg2.connect(database="tcount", user="postgres", password="siddiqi", host="localhost", port="5432")
+	cur = conn.cursor()
+	cur.execute("select * from tweetwordcount where word='" + word + "'")
+	records = cur.fetchall()
+	if len(records) != 0:
+		existingCount = records[0][1]
+		cur.execute("UPDATE tweetwordcount SET count=" + str(existingCount + count) + "where word='" + word + "'")
+	else:
+		cur.execute("INSERT INTO tweetwordcount (word,count) VALUES ('" + word + "'," + str(count) + ")")
+	conn.commit()
+	conn.close()
+
         
 
         # Increment the local count
