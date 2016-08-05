@@ -11,7 +11,7 @@ def return_counts(word=None):
   else:
     cur.execute("select * from tweetwordcount where word='" + word + "'")
     records = cur.fetchall()
-    result = records[0][1]
+    result = "Total number of occurences of \"" + word + "\" : " + str(records[0][1]) if len(records) != 0 else "Total number of occurences of \"" + word + "\" : 0"
   conn.commit()
   conn.close()
   return result
